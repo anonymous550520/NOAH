@@ -1,0 +1,92 @@
+You are evaluating a video caption for event omission errors.
+
+Your task is to determine whether any ground truth events are omitted from the caption.
+
+Some ground-truth events may have been artificially inserted for evaluation purposes. These are referred to as "inserted events."
+
+Please follow the steps carefully, and format your output exactly as specified.
+
+───────────────  EVALUATION STEPS  ───────────────
+**STEP 1 – GROUND_TRUTH_EVENTS**
+- Review both the Ground Truth Caption and the Supporting Visual Description for each event.
+- Based on these, extract all events as discrete semantic units that capture meaningful actions, agents, and interactions.
+- For each event, write a representative caption focusing on its main action, agent, and key object. Use the supporting visual description only to clarify visual content, not abstract context.
+- Number the resulting events (1., 2., …), and clearly mark which ones were artificially inserted for evaluation purposes.
+
+**STEP 2 – OMISSION CRITERIA**
+- An event is defined as an **argument structure** including participants (agents/objects) and actions. An event is considered **omitted** if core components are missing such that the event's meaning cannot be sufficiently conveyed — either explicitly, implicitly, through paraphrasing, or visual synonymy.
+
+- Even if certain components of the original event are not explicitly mentioned, the event is not considered omitted as long as its core meaning is preserved and reasonably inferable.
+
+- We evaluate omission at the **event level** based on semantic completeness. An event includes a combination of actions, agents, and key objects that form its core meaning. We do not assess individual words or isolated details.
+
+- **For events whose core meaning contains multiple actions**: If an event's core meaning includes several actions (e.g., "A person wipes, measures, and rolls paper"), the event is considered **INFERRED** if **any one** of those actions is properly described in the caption. Complete omission occurs only when **none** of the actions are mentioned or inferable.
+
+- **Peripheral participants** (e.g., onlookers, bystanders, crowd members, people watching) are **NOT** required for an event to be considered complete. Their absence does **NOT** constitute an omission.
+
+- Minor omissions of **attributes** (e.g., color, age, time, clothing) do NOT count as omissions — unless the missing attribute fundamentally alters the identity or core purpose of the event.
+
+- Incorrect mentions are considered hallucinations, not omissions. If an event is referenced but contains factual errors — such as wrong actions, agents, or objects — it is not an omission but a hallucination.
+
+- Ignore stylistic differences, paraphrasing, or variation in tone — only assess whether the event is **faithfully represented** in meaning.
+
+- We track two types of omissions:
+    1. **Total omission**: Ground-truth events that are not mentioned or inferable in the caption.
+    2. **Inserted event omission**: Among them, the subset of omitted events that were inserted.
+
+For each ground-truth event, determine whether it is faithfully represented in the caption:
+- A ground-truth event is considered **present (INFERRED)** if its core action and agent are reasonably conveyed — either:
+    • **Explicitly** – Clearly and directly stated  
+    • **Implicitly** – Strongly implied or logically inferable  
+    • **Paraphrased** – Reworded but semantically equivalent  
+    • **Visually synonymous** – Described differently but visually equivalent (e.g., "a man takes a bite" vs. "a man eats")
+- For events whose **core meaning contains multiple actions**, the event is **INFERRED** if **any one** of those actions is properly represented.
+- An event is considered **OMITTED** only if **none** of its actions (within the core meaning) are inferable by any of the above methods.
+- Supporting Visual Descriptions may assist your understanding, but should not be treated as required evidence.
+
+**STEP 3 – EVENT-BY-EVENT REASONING**  
+- For each ground-truth event, write a brief sentence following this format:
+    • Event #{N} – This event — [short description] — was [INFERRED / OMITTED] because [detailed justification]. This event [was / was not] an inserted one.
+
+- Justify your judgment based on the omission criteria from Step 2.
+
+**STEP 4 – FINAL DETECTION**  
+Provide the conclusive metric only:
+- TOTAL_OMISSION_COUNT: [number of all omitted events]
+- INSERTED_OMISSION_COUNT: [number of omitted events that were inserted]
+──────────────────────────────────────────────────
+
+──────────  OUTPUT FORMAT (strictly follow)  ──────────
+
+GROUND_TRUTH_EVENTS:
+1. [Ground-truth event 1]
+2. [Ground-truth event 2]
+...
+
+CRITERIA_REVIEW:  
+- An event is counted as OMITTED only if its **core meaning** (main action + agent + key object) is not recoverable via explicit, paraphrased, implied, or visually synonymous cues in the caption.
+- For events whose **core meaning contains multiple actions**, the event is **INFERRED** if **any one** of those actions is properly described.
+
+EVENT-BY-EVENT REASONING:  
+• Event #1 – This event — [short description] — was [INFERRED / OMITTED] because [justification]. This event [was / was not] an inserted one.  
+• Event #2 – ...  
+• Event #3 – ...
+...
+
+FINAL METRICS:  
+- TOTAL_OMISSION_COUNT: [number of all omitted events]  
+- INSERTED_OMISSION_COUNT: [number of omitted events that were inserted]
+
+────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────
+GROUND-TRUTH EVENTS (extracted from ground truth caption and visual description):
+{GROUND_TRUTH_EVENTS}
+
+INSERTED EVENT to check (at position {INSERT_POSITION}):
+"{INSERTED_EVENT}"
+
+INFERENCE CAPTION:
+"{INFERENCE_CAPTION}"
+────────────────────────────────────────────────────────
