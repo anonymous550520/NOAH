@@ -13,40 +13,6 @@ def load_model(model_name):
     processor = AutoProcessor.from_pretrained(pretrained_model_name)
     return {"model": model, "processor": processor}
 
-def generate_by_frame(model_info, video_path, query, item, max_new_tokens=1024):
-    model = model_info["model"]
-    processor = model_info["processor"]
-
-    conversation = [
-        {
-
-            "role": "user",
-            "content": [
-                {"type": "video", "path": video_path},
-                {"type": "text", "text": query},
-                ],
-        },
-    ]
-
-    inputs = processor.apply_chat_template(
-        conversation,
-        num_frames=16,
-        add_generation_prompt=True,
-        tokenize=True,
-        return_dict=True,
-        return_tensors="pt"
-    ).to(model.device, torch.float16)
-
-    out = model.generate(**inputs, max_new_tokens=max_new_tokens)
-    result = processor.batch_decode(out, skip_special_tokens=True, clean_up_tokenization_spaces=True)[0].strip()
-
-    if "assistant" in result:
-        response = result.split("assistant")[-1].strip()
-    else:
-        response = result.strip()
-
-    return response
-
 def generate(model_info, video_path, query, max_new_tokens=1024):
     model = model_info["model"]
     processor = model_info["processor"]
