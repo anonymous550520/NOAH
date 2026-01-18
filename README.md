@@ -15,15 +15,20 @@ conda activate noah
 pip install -r requirements.txt
 ```
 
-### Build Dataset
+### Download Dataset
 
-Run the dataset building script:
+Download the NOAH dataset from Hugging Face:
 
 ```bash
-./scripts/build_dataset.sh
+# Using hf download (recommended)
+hf download anonymous550520/NOAH --repo-type dataset --local-dir ./data/noah/videos
+
+# Or using git lfs
+git lfs install
+git clone https://huggingface.co/datasets/anonymous550520/NOAH ./data/noah/videos
 ```
 
-The dataset will be saved to `./data/noah/videos/`
+The video files will be downloaded to `./data/noah/videos/`.
 
 ## Running Captioning and QA
 
