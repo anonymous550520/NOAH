@@ -1,0 +1,89 @@
+You are evaluating a video caption for event hallucination errors.
+
+Your task is to determine whether any events in the inference caption describe information that is not supported by the ground truth events.
+
+Please follow the steps carefully, and format your output exactly as specified.
+
+───────────────  EVALUATION STEPS  ───────────────
+**STEP 1 – EXTRACTED_EVENTS**
+- Review the inference caption and extract only events that describe concrete agent-action-object interactions
+- Each event must capture a meaningful action performed by an agent involving a key object or participant.
+- Number the resulting events (1., 2., …)
+
+Do NOT extract any of the following as events:
+- Static background descriptions (e.g., crowd, tools, weather, lighting, location, structural surroundings)
+- Spatial relationships and static configurations (e.g., "the court is surrounded by a fence", "the room has windows", "there are chairs around the table")
+- Existential statements about objects or settings (e.g., "there is a lamp", "the area contains equipment", "a building stands nearby")
+- Minor attributes (e.g., color, clothing, age, time of day)
+- Text content, on-screen overlays, banners, labels, captions, or subtitles
+- Any references to reading, seeing, or describing visible text
+- Stylistic or emotional expressions (e.g., "focused expression", "dramatic moment")
+- Paraphrased general impressions or vague summaries (e.g., "showcases skills", "demonstrates technique")
+- Visual conditions without agent interaction (e.g., “the lighting is dim”, “a ladder is in the background”)
+- Any emotional or affective states inferred from appearance (e.g., "looked happy", "seemed determined", "appears moved")
+
+**STEP 2 – HALLUCINATION CRITERIA**  
+- An event is defined as an **argument structure** including participants (agents/objects) and actions. An event is considered **hallucinated** if it introduces new factual content that cannot be reasonably supported by ground truth events.
+
+- We evaluate hallucination at the **event level** based on semantic consistency. An event includes a combination of actions, agents, and key objects that form its core meaning. We do not assess individual words or isolated details.
+
+- Even if certain descriptive details are described differently (e.g., colors, sizes, emotional states), the event is not considered hallucinated as long as the core participants (agents/objects) and actions clearly match those in the ground truth events, with no substitutions (e.g., different materials, objects, or action types).
+
+- We focus on detecting:
+    1. **New actions**: Actions or behaviors not present or inferable from ground truth
+    2. **New participants**: Agents or objects introduced without ground truth support
+    3. **Contradictory content**: Information that directly conflicts with ground truth events
+
+- Background elements and minor additions of **attributes** (e.g., color, clothing, environmental details, atmospheric conditions) do NOT count as hallucinations — unless they contradict ground truth or fundamentally introduce new event content.
+
+- Stylistic interpretations, emotional descriptions, reasonable visual inferences, paraphrasing, and variations in tone are not hallucinations.
+
+- Ignore any mentions of text content, overlays, or subtitles when extracting events, and do not count them as hallucinations.
+
+For each extracted event, determine whether it is supported by ground truth content:
+- **Explicit** – Clearly and directly stated in ground truth, with the same core components (agents/objects/actions)
+- **Implicit** – Strongly implied or logically inferable from ground truth, with the same core components (agents/objects/actions)
+- **Paraphrased** – Reworded but semantically equivalent to ground truth content, with the same core components (agents/objects/actions)
+- **Visually synonymous** – Different wording is allowed only if the visual event is clearly the same and all core components (agents, objects, actions) remain identical with no substitutions.
+
+If an event is not supported by any of the above, mark it as hallucinated.
+
+**STEP 3 – EVENT-BY-EVENT REASONING**  
+- For each extracted event, write a brief sentence following this format:
+    • Event #{N} – This event — [short description] — was [SUPPORTED / HALLUCINATED] because [detailed justification].
+
+- Justify your judgment based on the hallucination criteria from Step 2.
+
+**STEP 4 – FINAL DETECTION**  
+Provide the conclusive metric only:
+- HALLUCINATION_COUNT: [number of hallucinated events]
+──────────────────────────────────────────────────
+
+──────────  OUTPUT FORMAT (strictly follow)  ──────────
+
+EXTRACTED_EVENTS:
+1. [Extracted event 1]
+2. [Extracted event 2]
+...
+
+CRITERIA_REVIEW:  
+- Apply the hallucination criteria defined in STEP 2 above.
+
+EVENT-BY-EVENT REASONING:  
+• Event #1 – This event — [short description] — was [SUPPORTED / HALLUCINATED] because [detailed justification].  
+• Event #2 – ...  
+• Event #3 – ...
+...
+
+FINAL METRICS:  
+- HALLUCINATION_COUNT: [number of hallucinated events]
+
+────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────
+GROUND-TRUTH EVENTS (reference for evaluation):
+{GROUND_TRUTH_EVENTS}
+
+INFERENCE CAPTION:
+"{INFERENCE_CAPTION}"
+────────────────────────────────────────────────────────

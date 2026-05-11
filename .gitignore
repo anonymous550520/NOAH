@@ -1,0 +1,5 @@
+# ignore pycache
+__pycache__/
+
+data/activitynet_videos
+data/activitynet_clips
